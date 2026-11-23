@@ -177,6 +177,11 @@ section{padding:96px 0;scroll-margin-top:64px}
 .deliv+ul{margin-top:10px!important}
 .plus{font-family:"Instrument Serif",serif;font-size:24px;margin:-12px 0 32px}
 .box li::before{content:"—";color:var(--accent);margin-right:12px}
+.paynote{margin:16px 0 0;font-size:12px;letter-spacing:.08em;color:var(--soft)}
+.thanks-box h2{font-size:clamp(40px,7vw,60px);margin:0 0 6px}
+.thanks-box .steps-t{list-style:none;padding:0;margin:30px auto 34px;text-align:left;max-width:420px;counter-reset:t}
+.thanks-box .steps-t li{counter-increment:t;color:var(--text)}
+.thanks-box .steps-t li::before{content:counter(t,upper-roman);font-family:"Instrument Serif",serif;color:var(--accent);margin-right:14px}
 .contact-line{margin-top:18px;font-size:14px;color:var(--soft)}
 
 /* faq */
@@ -619,7 +624,8 @@ body.menu-open .totop,body.menu-open .tg{opacity:0;pointer-events:none}
         <li>Prioritised recommendations</li>
       </ul>
       <div class="plus">+ 30 days of <em class="acc">chat support</em></div>
-      <a class="btn" href="mailto:?subject=Brand%20Audit">Book your Brand Audit</a>
+      <a class="btn" id="payBtn" href="https://buy.stripe.com/aFaeVdcOD1T09c8frhdUY00">Book your Brand Audit</a>
+      <p class="paynote" id="payNote" hidden>Secure payment by Stripe · card, Apple Pay, Google Pay</p>
     </div>
   </div>
 </section>
@@ -751,6 +757,31 @@ body.menu-open .totop,body.menu-open .tg{opacity:0;pointer-events:none}
 </section>
 </main>
 
+<main id="page-thanks" class="page" hidden>
+<section class="page-hero" style="padding-bottom:0">
+  <div class="wrap">
+    <div class="meta"><span>Brand Audit</span><span>Booked</span></div>
+    <p class="kicker" style="margin-top:56px">Payment received</p>
+    <hr class="rule">
+  </div>
+</section>
+<section class="offer" style="padding-top:20px;background:none">
+  <div class="wrap">
+    <div class="box thanks-box">
+      <h2>Thank <em class="acc">you</em></h2>
+      <p class="mute">Your Brand Audit is booked. A receipt from Stripe is on its way to your inbox.</p>
+      <ol class="steps-t">
+        <li>Choose a time for our Zoom call</li>
+        <li>We go through your brand together</li>
+        <li>You receive your PDF deck + 30 days of chat support</li>
+      </ol>
+      <a class="btn" id="slotBtn" href="#" target="_blank" rel="noopener" hidden>Choose your Zoom slot</a>
+      <p class="mute" id="slotNote">I’ll email you within 24 hours with a link to choose your slot.</p>
+    </div>
+  </div>
+</section>
+</main>
+
 <main id="page-contact" class="page" hidden>
 <section class="page-hero" style="padding-bottom:0">
   <div class="wrap">
@@ -850,6 +881,16 @@ body.menu-open .totop,body.menu-open .tg{opacity:0;pointer-events:none}
   /* subscribe + contact. Fill these in to connect the forms. */
   var CONTACT_EMAIL='';           // e.g. hello@mariaderoy.com
   var SUBSCRIBE_URL='https://mariaderoy.substack.com';
+  /* payments. STRIPE_LINK: Stripe Payment Link (https://buy.stripe.com/...).
+     In Stripe set "After payment" → redirect to https://mariaderoy.com/?paid=1
+     BOOKING_URL (optional): Calendly / Cal.com link shown after payment. */
+  var STRIPE_LINK='https://buy.stripe.com/aFaeVdcOD1T09c8frhdUY00';
+  var BOOKING_URL='https://calendly.com/deroygroup/onboarding-meeting';
+  (function(){
+    if(STRIPE_LINK){var pb=document.getElementById('payBtn');pb.href=STRIPE_LINK;document.getElementById('payNote').hidden=false}
+    if(BOOKING_URL){var sb=document.getElementById('slotBtn');sb.href=BOOKING_URL;sb.hidden=false;document.getElementById('slotNote').hidden=true}
+    if(/[?&]paid=/.test(location.search)){try{history.replaceState(null,'',location.pathname+'#thanks')}catch(e){location.hash='thanks'}}
+  })();
   (function(){
     function ok(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
     var cm=document.getElementById('cmail');
@@ -871,7 +912,7 @@ body.menu-open .totop,body.menu-open .tg{opacity:0;pointer-events:none}
 
   /* pages (hash routing) */
   (function(){
-    var PAGES={'library':'page-library','work-with-me':'page-work-with-me','teaching':'page-teaching','contact':'page-contact'};
+    var PAGES={'library':'page-library','work-with-me':'page-work-with-me','teaching':'page-teaching','contact':'page-contact','thanks':'page-thanks'};
     var home=document.getElementById('top');
     function route(){var h=decodeURIComponent(location.hash.slice(1)),pid=PAGES[h];
       var was=home.hidden;
